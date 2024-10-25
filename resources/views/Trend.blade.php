@@ -26,7 +26,7 @@
             <li><a href="Trend.php">&#9733; Trend</a></li>
             <li><a href="save.php">&#128278; Saved</a></li>
             <li><a href="Profile.php">&#128100; Profile</a></li>
-            <li><a href="#">&#9881; Setting</a></li>
+            <li><a href="">&#9881; Setting</a></li>
         </ul>
     </div>
 
