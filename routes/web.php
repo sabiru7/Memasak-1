@@ -1,31 +1,35 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RecipeController;
 
-// Rute untuk halaman beranda
+// Home route
 Route::get('/', function () {
-    return view(''); // Ganti dengan view yang sesuai
+    return view('welcome'); // You can create a welcome view or redirect to another page
 });
 
-// Rute untuk halaman resep
-Route::get('/recipes', 'RecipeController@index')->name('recipes.index');
+// Recipe routes
+Route::prefix('recipes')->group(function () {
+    // Display all recipes
+    Route::get('/', [RecipeController::class, 'index'])->name('recipes.index');
 
-// Rute untuk melihat detail resep
-Route::get('/recipes/{id}', 'RecipeController@show')->name('recipes.show');
+    // Show a single recipe
+    Route::get('/{id}', [RecipeController::class, 'show'])->name('recipes.show');
 
-// Rute untuk menyimpan resep baru
-Route::get('/recipes/create', 'RecipeController@create')->name('recipes.create');
-Route::post('/recipes', 'RecipeController@store')->name('recipes.store');
+    // Show form to create a new recipe
+    Route::get('/create', [RecipeController::class, 'create'])->name('recipes.create');
 
-// Rute untuk mengedit resep
-Route::get('/recipes/{id}/edit', 'RecipeController@edit')->name('recipes.edit');
-Route::put('/recipes/{id}', 'RecipeController@update')->name('recipes.update');
+    // Store a new recipe
+    Route::post('/', [RecipeController::class, 'store'])->name('recipes.store');
 
-// Rute untuk menghapus resep
-Route::delete('/recipes/{id}', 'RecipeController@destroy')->name('recipes.destroy');
+    // Show form to edit an existing recipe
+    Route::get('/{id}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
 
-// Rute untuk halaman profil pengguna
-Route::get('/profile', 'User Controller@show')->name('profile.show');
+    // Update an existing recipe
+    Route::put('/{id}', [RecipeController::class, 'update'])->name('recipes.update');
 
-// Rute untuk halaman pengaturan
-Route::get('/settings', 'SettingsController@index')->name('settings.index');
+    // Delete a recipe
+    Route::delete('/{id}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+    //contrroler
+Route::resource('recipes', RecipeController::class);
+});
