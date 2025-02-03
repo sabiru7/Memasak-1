@@ -4,61 +4,104 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 
 class RecipeController extends Controller
 {
-    public function index()
+    /**
+     * Get all recipes.
+     *
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
     {
-        $recipes = Recipe::all();
-        return view('recipes.index', compact('recipes'));
+        try {
+            $recipes = Recipe::all();
+            return response()->json($recipes);
+        } catch (\Exception $e) {
+            Log::error('Error fetching recipes: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while fetching recipes.'], 500);
+        }
     }
 
-    public function show($id)
+    /**
+     * Get a single recipe by ID.
+     *
+     * @param Recipe $recipe
+     * @return JsonResponse
+     */
+    public function show(Recipe $recipe): JsonResponse
     {
-        $recipe = Recipe::findOrFail($id);
-        return view('recipes.show', compact('recipe'));
+        try {
+            return response()->json($recipe);
+        } catch (\Exception $e) {
+            Log::error('Error fetching recipe: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while fetching the recipe.'], 500);
+        }
     }
 
-    public function create()
+    /**
+     * Create a new recipe.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function store(Request $request): JsonResponse
     {
-        return view('recipes.create');
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'ingredients' => 'required|string',
-            'instructions' => 'required|string',
+            'steps' => 'required|string',
         ]);
 
-        Recipe::create($request->all());
-        return redirect()->route('recipes.index')->with('success', 'Recipe created successfully.');
+        try {
+            $recipe = Recipe::create($validated);
+            return response()->json($recipe, 201);
+        } catch (\Exception $e) {
+            Log::error('Error creating recipe: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while creating the recipe.'], 500);
+        }
     }
 
-    public function edit($id)
+    /**
+     * Update an existing recipe.
+     *
+     * @param Request $request
+     * @param Recipe $recipe
+     * @return JsonResponse
+     */
+    public function update(Request $request, Recipe $recipe): JsonResponse
     {
-        $recipe = Recipe::findOrFail($id);
-        return view('recipes.edit', compact('recipe'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'ingredients' => 'required|string',
-            'instructions' => 'required|string',
+        $validated = $request->validate([
+            'title' => 'sometimes|string|max:255',
+            'ingredients' => 'sometimes|string',
+            'steps' => 'sometimes|string',
         ]);
 
-        $recipe = Recipe::findOrFail($id);
-        $recipe->update($request->all());
-        return redirect()->route('recipes.index')->with('success', 'Recipe updated successfully.');
+        try {
+            $recipe->update($validated);
+            return response()->json($recipe);
+        } catch (\Exception $e) {
+            Log::error('Error updating recipe: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while updating the recipe.'], 500);
+        }
     }
 
-    public function destroy($id)
+    /**
+     * Delete a recipe.
+     *
+     * @param Recipe $recipe
+     * @return JsonResponse
+     */
+    public function destroy(Recipe $recipe): JsonResponse
     {
-        $recipe = Recipe::findOrFail($id);
-        $recipe->delete();
-        return redirect()->route('recipes.index')->with('success', 'Recipe deleted successfully.');
+        try {
+            $recipe->delete();
+            return response()->json(['message' => 'Recipe deleted successfully.']);
+        } catch (\Exception $e) {
+            Log::error('Error deleting recipe: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred while deleting the recipe.'], 500);
+        }
     }
 }

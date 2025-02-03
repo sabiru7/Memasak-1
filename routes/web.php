@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RecipeController;
 
 // Home route
-Route::get('/', function () {
+Route::get('/welcome', function () {
     return view('welcome'); // You can create a welcome view or redirect to another page
 });
 
@@ -33,3 +33,6 @@ Route::prefix('recipes')->group(function () {
     //contrroler
 Route::resource('recipes', RecipeController::class);
 });
+//use App\Http\Controllers\RecipeController;
+
+//Route::resource('recipes', RecipeController::class);

@@ -19,6 +19,6 @@ class User extends Authenticatable
     // Relasi ke resep
     public function recipes()
     {
-        return $this->hasMany(::class);
+        //return $this->hasMany(memasak::class);
     }
 }
